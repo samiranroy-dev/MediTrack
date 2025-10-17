@@ -761,8 +761,17 @@
 
 
         function initializeData() {
-            globalMedicines = loadData(MEDICINE_STORAGE_KEY, localStorage.getItem(MEDICINE_STORAGE_KEY) ? [] : mockMedicines);
-            globalOrders = loadData(ORDER_STORAGE_KEY, localStorage.getItem(ORDER_STORAGE_KEY) ? [] : mockOrders);
+            // Check if data exists in localStorage. If not, load mock data once.
+            const initialLoadMedicines = localStorage.getItem(MEDICINE_STORAGE_KEY) === null ? mockMedicines : [];
+            const initialLoadOrders = localStorage.getItem(ORDER_STORAGE_KEY) === null ? mockOrders : [];
+            
+            globalMedicines = loadData(MEDICINE_STORAGE_KEY, initialLoadMedicines);
+            globalOrders = loadData(ORDER_STORAGE_KEY, initialLoadOrders);
+
+            // If we just loaded mock data, save it immediately so it doesn't reload next time.
+            if (initialLoadMedicines.length > 0) saveData(MEDICINE_STORAGE_KEY, globalMedicines);
+            if (initialLoadOrders.length > 0) saveData(ORDER_STORAGE_KEY, globalOrders);
+
             renderAllViews();
         }
 
