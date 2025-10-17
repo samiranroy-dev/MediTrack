@@ -362,7 +362,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="orders-body" class="divide-y divide-gray-700">
-                                    <tr id="orders-loading"><td colspan="6" class="p-4 text-center text-gray-500">Loading recent orders...</td></tr>
+                                    <tr id="orders-loading"><td colspan="6" class="p-4 text-center text-gray-500">No recent orders found.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -456,10 +456,9 @@
                         <h3 id="order-form-title" class="text-xl font-semibold mb-4 border-b pb-2 border-gray-700 text-indigo-400">Capture New Sale</h3>
                         <form id="new-order-form" class="space-y-4">
                             <input type="hidden" id="order-id-field">
-                            <input type="hidden" id="original-product-id-field">
-                            <input type="hidden" id="original-quantity-field">
                             
-                            <h4 class="text-lg text-gray-300 pt-2">Customer Info</h4>
+                            <!-- Customer Info -->
+                            <h4 class="text-lg text-gray-300 pt-2 border-b border-gray-700/50 pb-1">Customer Info</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input type="text" id="customerName" placeholder="Customer Name" required
                                     class="w-full p-3 rounded-lg bg-gray-700/50 border border-indigo-500/50 focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 text-white outline-none">
@@ -467,29 +466,69 @@
                                     class="w-full p-3 rounded-lg bg-gray-700/50 border border-indigo-500/50 focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 text-white outline-none">
                             </div>
 
-                            <h4 class="text-lg text-gray-300 pt-2">Item & Payment</h4>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <!-- Item Adder (Cart) -->
+                            <h4 class="text-lg text-gray-300 pt-4 border-b border-gray-700/50 pb-1">Add Items to Cart</h4>
+                            <div class="grid grid-cols-4 gap-4 items-end">
+                                <div class="col-span-2">
+                                    <label class="text-xs text-gray-400">Product (Available Stock)</label>
+                                    <select id="productSelect" class="w-full p-3 rounded-lg bg-gray-700/50 border border-indigo-500/50 focus:ring-2 focus:ring-indigo-500 text-white outline-none">
+                                        <option value="" disabled selected>Select Product</option>
+                                    </select>
+                                </div>
                                 
-                                <select id="productSelect" required
-                                    class="w-full p-3 rounded-lg bg-gray-700/50 border border-indigo-500/50 focus:ring-2 focus:ring-indigo-500 text-white outline-none">
-                                    <option value="" disabled selected>Select Product</option>
-                                </select>
+                                <div>
+                                    <label class="text-xs text-gray-400">Quantity</label>
+                                    <input type="number" id="orderQuantity" placeholder="Qty" min="1" value="1"
+                                        class="w-full p-3 rounded-lg bg-gray-700/50 border border-indigo-500/50 focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 text-white outline-none">
+                                </div>
+                                
+                                <div>
+                                    <button type="button" onclick="addToCart()" class="w-full p-3 rounded-lg bg-cyan-600 font-bold uppercase tracking-wider neon-glow-btn text-gray-900">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Current Cart Items -->
+                            <h4 class="text-lg text-gray-300 pt-4 border-b border-gray-700/50 pb-1">Current Order Items (<span id="cart-item-count">0</span>)</h4>
+                            <div class="responsive-table-wrapper">
+                                <table class="min-w-full text-left text-sm">
+                                    <thead>
+                                        <tr class="text-cyan-400">
+                                            <th class="p-2">Product Name</th>
+                                            <th class="p-2">Qty</th>
+                                            <th class="p-2">Price (₹)</th>
+                                            <th class="p-2">X</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cart-items-body" class="divide-y divide-gray-700">
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="text-lg font-bold text-green-400 bg-gray-800/50">
+                                            <td colspan="2" class="p-2">Total:</td>
+                                            <td class="p-2" id="cart-total-price">₹0.00</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
 
-                                <input type="number" id="orderQuantity" placeholder="Quantity" required min="1"
-                                    class="w-full p-3 rounded-lg bg-gray-700/50 border border-indigo-500/50 focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 text-white outline-none">
-
-                                <select type="text" id="paymentMethod" required
+                            <!-- Payment Method -->
+                            <h4 class="text-lg text-gray-300 pt-4 border-b border-gray-700/50 pb-1">Payment & Finalize</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <select id="paymentMethod" required
                                     class="w-full p-3 rounded-lg bg-gray-700/50 border border-indigo-500/50 focus:ring-2 focus:ring-indigo-500 text-white outline-none">
-                                    <option value="" disabled selected>Payment</option>
+                                    <option value="" disabled selected>Select Payment Method</option>
                                     <option value="Cash">Cash</option>
                                     <option value="Card">Card</option>
                                     <option value="UPI">UPI</option>
                                     <option value="Credit">Credit</option>
                                 </select>
                                 
-                                <input type="number" id="orderPrice" placeholder="Total Price (₹)" required step="0.01" min="0.1"
-                                    class="w-full p-3 rounded-lg bg-gray-700/50 border border-indigo-500/50 focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 text-white outline-none">
+                                <input type="number" id="orderPriceTotal" placeholder="Final Price (Auto)" required step="0.01" min="0.1" readonly
+                                    class="w-full p-3 rounded-lg bg-gray-700/50 border border-indigo-500/50 placeholder-gray-400 text-white outline-none focus:ring-0">
                             </div>
+
 
                             <div class="flex justify-end space-x-4 pt-4">
                                 <button type="button" class="p-3 rounded-lg bg-gray-600 font-bold text-white hover:bg-gray-700" onclick="hideNewOrderForm()">
@@ -509,8 +548,8 @@
                                     <tr class="text-indigo-400">
                                         <th class="p-3">Order ID</th>
                                         <th class="p-3">Customer</th>
-                                        <th class="p-3 hidden sm:table-cell">Product</th>
-                                        <th class="p-3">Quantity</th>
+                                        <th class="p-3 hidden sm:table-cell">Items</th>
+                                        <th class="p-3">Qty</th>
                                         <th class="p-3 hidden md:table-cell">Date</th>
                                         <th class="p-3">Status</th>
                                         <th class="p-3 hidden sm:table-cell">Payment</th>
@@ -595,6 +634,59 @@
         const AUTH_USER_KEY = 'meditrack_logged_in_user';
         const AUTH_USERS_KEY = 'meditrack_registered_users';
         let currentUser = null; 
+        
+        // --- DATA MANAGEMENT ---
+        const MEDICINE_STORAGE_KEY = 'meditrack_medicines';
+        const ORDER_STORAGE_KEY = 'meditrack_orders';
+
+        let globalMedicines = [];
+        let globalOrders = [];
+        let currentOrderItems = []; // New array for holding multi-item cart
+        
+        const knownBarcodes = {}; 
+
+        function generateUUID() {
+            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                return crypto.randomUUID();
+            }
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+        
+        function loadData(key, mockData = []) {
+            const data = localStorage.getItem(key);
+            if (data) {
+                try {
+                    return JSON.parse(data);
+                } catch (e) {
+                    console.error("Error parsing localStorage data for key:", key, e);
+                    saveData(key, mockData);
+                    return mockData;
+                }
+            }
+            return mockData; 
+        }
+
+        function saveData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function initializeData() {
+            const initialLoadMedicines = localStorage.getItem(MEDICINE_STORAGE_KEY) === null ? [] : [];
+            const initialLoadOrders = localStorage.getItem(ORDER_STORAGE_KEY) === null ? [] : [];
+            
+            globalMedicines = loadData(MEDICINE_STORAGE_KEY, initialLoadMedicines);
+            globalOrders = loadData(ORDER_STORAGE_KEY, initialLoadOrders);
+
+            if (localStorage.getItem(MEDICINE_STORAGE_KEY) === null) saveData(MEDICINE_STORAGE_KEY, []);
+            if (localStorage.getItem(ORDER_STORAGE_KEY) === null) saveData(ORDER_STORAGE_KEY, []);
+
+            renderAllViews();
+        }
+
+        // --- AUTHENTICATION ---
 
         async function hashString(str) {
             return btoa(str.split('').map(char => String.fromCharCode(char.charCodeAt(0) ^ 10)).join(''));
@@ -702,57 +794,275 @@
             document.getElementById('auth-status').classList.add('hidden');
         };
 
-        function generateUUID() {
-            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-                return crypto.randomUUID();
+        // --- CORE UI FUNCTIONS ---
+
+        function renderAllViews() {
+            renderInventory(globalMedicines);
+            renderDashboardMetrics(globalMedicines);
+            renderRecentOrders(globalOrders);
+            renderAllOrders(globalOrders);
+            renderReports();
+        }
+
+        window.changeView = (viewId, element) => {
+            document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (element) {
+                element.classList.add('active');
+            } else {
+                document.getElementById(`nav-${viewId.split('-')[0]}`).classList.add('active');
             }
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
-
-        const MEDICINE_STORAGE_KEY = 'meditrack_medicines';
-        const ORDER_STORAGE_KEY = 'meditrack_orders';
-
-        let globalMedicines = [];
-        let globalOrders = [];
-        
-        const knownBarcodes = {}; // Mock data for barcodes removed
-
-        function loadData(key, mockData = []) {
-            const data = localStorage.getItem(key);
-            if (data) {
-                try {
-                    return JSON.parse(data);
-                } catch (e) {
-                    console.error("Error parsing localStorage data for key:", key, e);
-                    saveData(key, mockData);
-                    return mockData;
-                }
+            window.currentView = viewId;
+            if (viewId !== 'orders-view') {
+                hideNewOrderForm();
             }
-            return mockData; 
-        }
-
-        function saveData(key, data) {
-            localStorage.setItem(key, JSON.stringify(data));
-        }
-
-        function initializeData() {
-            // Check if data exists in localStorage. If not, default to an empty array.
-            const initialLoadMedicines = localStorage.getItem(MEDICINE_STORAGE_KEY) === null ? [] : [];
-            const initialLoadOrders = localStorage.getItem(ORDER_STORAGE_KEY) === null ? [] : [];
+            document.getElementById('global-search-input').value = '';
+            window.handleGlobalSearch();
             
-            globalMedicines = loadData(MEDICINE_STORAGE_KEY, initialLoadMedicines);
-            globalOrders = loadData(ORDER_STORAGE_KEY, initialLoadOrders);
+            if (window.innerWidth < 1024) {
+                toggleSidebar(false);
+            }
+        };
+        window.currentView = 'dashboard-view';
 
-            // If we just loaded mock data (which is now []), this will save the empty array
-            // only if the key was null, effectively initializing it to empty.
-            if (localStorage.getItem(MEDICINE_STORAGE_KEY) === null) saveData(MEDICINE_STORAGE_KEY, []);
-            if (localStorage.getItem(ORDER_STORAGE_KEY) === null) saveData(ORDER_STORAGE_KEY, []);
+
+        window.toggleSidebar = (forceOpen = null) => {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('backdrop');
+            const isMenuOpen = sidebar.classList.contains('open');
+
+            if (forceOpen === true || (forceOpen === null && !isMenuOpen)) {
+                sidebar.classList.add('open');
+                backdrop.classList.add('show');
+            } else if (forceOpen === false || (forceOpen === null && isMenuOpen)) {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('show');
+            }
+        };
+
+        function setDateDisplay() {
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = new Date().toLocaleDateString('en-US', dateOptions);
+            document.getElementById('current-date-display').textContent = dateString;
+            document.getElementById('date-text').textContent = dateString;
+        }
+
+        function getStatusBadge(status) {
+            let colorClass = '';
+            switch(status) {
+                case 'Delivered': colorClass = 'badge-delivered'; break;
+                case 'Sold': colorClass = 'badge-sold'; break;
+                case 'Processing': colorClass = 'badge-processing'; break;
+                case 'Order on Hold': colorClass = 'badge-hold'; break;
+                default: colorClass = 'bg-gray-500/50 text-gray-200';
+            }
+            return `<span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${colorClass}">${status}</span>`;
+        }
+        
+        // --- ORDER MANAGEMENT (MULTI-ITEM) ---
+
+        window.showNewOrderForm = (orderId = null) => {
+            const formContainer = document.getElementById('new-order-form-container');
+            const productSelect = document.getElementById('productSelect');
+            const formTitle = document.getElementById('order-form-title');
+            const saveBtn = document.getElementById('save-order-btn');
+
+            document.getElementById('order-id-field').value = orderId || '';
+            document.getElementById('new-order-form').reset();
+            currentOrderItems = []; // Reset cart for new/edit order
+
+            formContainer.classList.remove('hidden');
+            productSelect.innerHTML = '<option value="" disabled selected>Select Product</option>';
+            
+            // Only allow editing existing orders, cannot change items in this simplified version
+            if (orderId) {
+                 openModal("Feature Disabled", "Editing multi-item orders is disabled in this version for complexity.", "OK", hideNewOrderForm, true);
+                 return;
+            } 
+            
+            formTitle.textContent = `Capture New Sale`;
+            saveBtn.textContent = 'Complete Sale';
+
+            globalMedicines.filter(m => m.quantity > 0).forEach(medicine => {
+                const option = document.createElement('option');
+                option.value = medicine.id;
+                option.setAttribute('data-price', medicine.price);
+                option.setAttribute('data-qty', medicine.quantity);
+                option.textContent = `${medicine.name} (Qty: ${medicine.quantity})`;
+                productSelect.appendChild(option);
+            });
+            
+            renderCart();
+        };
+
+        window.hideNewOrderForm = () => {
+            document.getElementById('new-order-form-container').classList.add('hidden');
+            document.getElementById('new-order-form').reset();
+            currentOrderItems = []; // Ensure cart is cleared on close
+            renderCart();
+        };
+        
+        window.addToCart = () => {
+            const productSelect = document.getElementById('productSelect');
+            const orderQuantityInput = document.getElementById('orderQuantity');
+            
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            if (!selectedOption || !selectedOption.value) {
+                openModal("Selection Error", "Please select a product.", "OK", () => {}, true);
+                return;
+            }
+
+            const productId = selectedOption.value;
+            const name = selectedOption.textContent.split(' (Qty:')[0];
+            const pricePerUnit = parseFloat(selectedOption.getAttribute('data-price'));
+            const stockQty = parseInt(selectedOption.getAttribute('data-qty'), 10);
+            const orderQty = parseInt(orderQuantityInput.value, 10);
+
+            if (isNaN(orderQty) || orderQty <= 0) {
+                 openModal("Quantity Error", "Please enter a valid quantity.", "OK", () => {}, true);
+                 return;
+            }
+
+            const existingCartItem = currentOrderItems.find(item => item.productId === productId);
+            const totalRequestedQty = orderQty + (existingCartItem ? existingCartItem.quantity : 0);
+
+            if (totalRequestedQty > stockQty) {
+                 openModal("Stock Error", `Insufficient stock for ${name}. Only ${stockQty} units available.`, "OK", () => {}, true);
+                 return;
+            }
+
+            if (existingCartItem) {
+                existingCartItem.quantity = totalRequestedQty;
+                existingCartItem.price += pricePerUnit * orderQty;
+            } else {
+                currentOrderItems.push({
+                    productId,
+                    name,
+                    quantity: orderQty,
+                    pricePerUnit,
+                    price: pricePerUnit * orderQty
+                });
+            }
+
+            renderCart();
+            orderQuantityInput.value = 1; // Reset quantity input
+            productSelect.selectedIndex = 0; // Reset product selection
+        };
+        
+        window.removeFromCart = (productId) => {
+            currentOrderItems = currentOrderItems.filter(item => item.productId !== productId);
+            renderCart();
+        };
+        
+        function renderCart() {
+            const cartBody = document.getElementById('cart-items-body');
+            const cartTotalPrice = document.getElementById('cart-total-price');
+            const cartItemCount = document.getElementById('cart-item-count');
+            const orderPriceTotal = document.getElementById('orderPriceTotal');
+            let total = 0;
+            
+            cartBody.innerHTML = '';
+
+            currentOrderItems.forEach(item => {
+                total += item.price;
+                const row = cartBody.insertRow();
+                row.className = 'text-gray-200';
+                row.innerHTML = `
+                    <td class="p-2">${item.name}</td>
+                    <td class="p-2">${item.quantity}</td>
+                    <td class="p-2">₹${item.price.toFixed(2)}</td>
+                    <td class="p-2">
+                        <button type="button" onclick="removeFromCart('${item.productId}')" class="text-red-400 hover:text-red-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </td>
+                `;
+            });
+            
+            cartTotalPrice.textContent = `₹${total.toFixed(2)}`;
+            orderPriceTotal.value = total.toFixed(2);
+            cartItemCount.textContent = currentOrderItems.length;
+
+            document.getElementById('save-order-btn').disabled = currentOrderItems.length === 0;
+        }
+
+        function saveOrder(e) {
+            e.preventDefault();
+
+            const orderId = document.getElementById('order-id-field').value;
+            const isEditing = !!orderId;
+            
+            if (isEditing) {
+                 openModal("Update Error", "Editing multi-item orders is disabled in this version.", "OK", () => {}, true);
+                 return;
+            }
+            
+            const customerName = document.getElementById('customerName').value.trim();
+            const customerEmail = document.getElementById('customerEmail').value.trim();
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const orderPriceTotal = parseFloat(document.getElementById('orderPriceTotal').value);
+            
+            if (currentOrderItems.length === 0) {
+                 openModal("Order Error", "Please add at least one item to the order before completing the sale.", "OK", () => {}, true);
+                 return;
+            }
+            if (!customerName || !paymentMethod || isNaN(orderPriceTotal)) {
+                 openModal("Validation Error", "Please fill in customer name and select a payment method.", "OK", () => {}, true);
+                 return;
+            }
+
+            // --- STOCK DEDUCTION ---
+            let totalUnits = 0;
+            let productListString = "";
+
+            currentOrderItems.forEach(cartItem => {
+                const medicine = globalMedicines.find(m => m.id === cartItem.productId);
+                if (medicine) {
+                    medicine.quantity -= cartItem.quantity; // Deduct stock
+                    totalUnits += cartItem.quantity;
+                    productListString += `${cartItem.name} (${cartItem.quantity}), `;
+                }
+            });
+            
+            // Cleanup list string
+            productListString = productListString.slice(0, -2);
+            
+            // Determine the next order ID
+            const nextOrderNumber = (globalOrders.length + 1).toString().padStart(3, '0');
+
+            const orderRecord = {
+                id: generateUUID(),
+                orderId: `#${nextOrderNumber}`,
+                customerName,
+                customerEmail: customerEmail || 'N/A',
+                items: currentOrderItems, // Array of products purchased
+                product: productListString, // Summary string for easy table display
+                quantity: totalUnits, // Total units purchased
+                date: new Date().toISOString().split('T')[0],
+                status: 'Sold',
+                paymentMethod,
+                price: orderPriceTotal
+            };
+
+            globalOrders.push(orderRecord);
+            openModal("Sale Complete", `Order ${orderRecord.orderId} for ${customerName} has been processed (${totalUnits} units).`, "OK", () => {}, true);
+
+            saveData(ORDER_STORAGE_KEY, globalOrders);
+            saveData(MEDICINE_STORAGE_KEY, globalMedicines);
 
             renderAllViews();
+            hideNewOrderForm();
         }
+        
+        window.editOrder = (id) => {
+            window.changeView('orders-view');
+             openModal("Feature Disabled", "Editing multi-item orders is disabled in this version for complexity.", "OK", () => {}, true);
+        };
+
+
+        // --- DASHBOARD & REPORTS ---
 
         function generateMonthlySales(orders) {
             const monthlyData = {};
@@ -789,11 +1099,14 @@
 
             orders.forEach(order => {
                 if (order.status === 'Sold' || order.status === 'Delivered') {
-                    if (!productSales[order.product]) {
-                        productSales[order.product] = { name: order.product, unitsSold: 0, totalRevenue: 0 };
-                    }
-                    productSales[order.product].unitsSold += order.quantity;
-                    productSales[order.product].totalRevenue += order.price;
+                    // Iterate over items array in the order
+                    (order.items || []).forEach(item => {
+                        if (!productSales[item.name]) {
+                            productSales[item.name] = { name: item.name, unitsSold: 0, totalRevenue: 0 };
+                        }
+                        productSales[item.name].unitsSold += item.quantity;
+                        productSales[item.name].totalRevenue += item.price; 
+                    });
                 }
             });
 
@@ -845,14 +1158,6 @@
             }
         }
 
-        function renderAllViews() {
-            renderInventory(globalMedicines);
-            renderDashboardMetrics(globalMedicines);
-            renderRecentOrders(globalOrders);
-            renderAllOrders(globalOrders);
-            renderReports();
-        }
-
         function renderDashboardMetrics(medicines) {
             const totalItems = medicines.length;
             const outOfStockItems = medicines.filter(m => m.quantity === 0);
@@ -880,93 +1185,7 @@
             document.getElementById('expiring-soon-percentage').textContent = `${getPercentage(expiringSoonCount, totalItems)}%`;
         }
         
-        function getStatusBadge(status) {
-            let colorClass = '';
-            switch(status) {
-                case 'Delivered': colorClass = 'badge-delivered'; break;
-                case 'Sold': colorClass = 'badge-sold'; break;
-                case 'Processing': colorClass = 'badge-processing'; break;
-                case 'Order on Hold': colorClass = 'badge-hold'; break;
-                default: colorClass = 'bg-gray-500/50 text-gray-200';
-            }
-            return `<span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${colorClass}">${status}</span>`;
-        }
-
-        function renderRecentOrders(orders) {
-            const tableBody = document.getElementById('orders-body');
-            tableBody.innerHTML = '';
-            
-            const recentOrders = [...orders].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
-
-            if (recentOrders.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No recent orders found.</td></tr>';
-                return;
-            }
-
-            recentOrders.forEach(order => {
-                const row = tableBody.insertRow();
-                row.className = `transition duration-150 hover:bg-gray-800 text-gray-200`;
-                
-                row.innerHTML = `
-                    <td class="p-3 font-mono text-cyan-300">${order.orderId}</td>
-                    <td class="p-3">
-                        <p class="font-semibold">${order.customerName}</p>
-                        <p class="text-xs text-gray-500 hidden md:block">${order.customerEmail}</p>
-                    </td>
-                    <td class="p-3 hidden sm:table-cell text-gray-400">${order.product}</td>
-                    <td class="p-3">${order.quantity}</td>
-                    <td class="p-3">${getStatusBadge(order.status)}</td>
-                    <td class="p-3">
-                        <button onclick="viewOrderDetails('${order.id}')" class="text-indigo-400 hover:text-indigo-200 text-sm font-semibold rounded-md bg-indigo-900/30 p-1">View</button>
-                    </td>
-                `;
-            });
-        }
-        
-        function renderAllOrders(orders) {
-             const tableBody = document.getElementById('all-orders-body');
-             tableBody.innerHTML = '';
-             const loadingRow = document.getElementById('all-orders-loading');
-             if (loadingRow) loadingRow.remove();
-
-             if (orders.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="9" class="p-4 text-center text-gray-500">No orders found.</td></tr>';
-                return;
-             }
-
-             [...orders].sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(order => {
-                 const row = tableBody.insertRow();
-                 row.className = `transition duration-150 hover:bg-gray-800 text-gray-200`;
-                 
-                 const orderDate = order.date;
-
-                 row.innerHTML = `
-                    <td class="p-3 font-mono text-cyan-300">${order.orderId}</td>
-                    <td class="p-3">
-                        <p class="font-semibold">${order.customerName}</p>
-                        <p class="text-xs text-gray-500">${order.customerEmail}</p>
-                    </td>
-                    <td class="p-3 hidden sm:table-cell text-gray-400">${order.product}</td>
-                    <td class="p-3">${order.quantity}</td>
-                    <td class="p-3 hidden md:table-cell text-gray-400">${orderDate}</td>
-                    <td class="p-3">${getStatusBadge(order.status)}</td>
-                    <td class="p-3 hidden sm:table-cell text-gray-400">${order.paymentMethod}</td>
-                    <td class="p-3 hidden sm:table-cell text-green-400">₹${order.price.toFixed(2)}</td>
-                    <td class="p-3 flex space-x-1">
-                        <button onclick="viewOrderDetails('${order.id}')" class="text-cyan-400 hover:text-cyan-200 p-1 rounded-full hover:bg-cyan-900/30 transition duration-150" title="View Details">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        </button>
-                        <button onclick="editOrder('${order.id}')" class="text-yellow-400 hover:text-yellow-200 p-1 rounded-full hover:bg-yellow-900/30 transition duration-150" title="Edit Order">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-9-4l9-9m-7 11l-3 3"></path></svg>
-                        </button>
-                        <button onclick="deleteOrderPrompt('${order.id}', '${order.orderId}')" class="text-red-400 hover:text-red-200 p-1 rounded-full hover:bg-red-900/30 transition duration-150" title="Delete Order">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </td>
-                `;
-             });
-        }
-
+        // --- INVENTORY MANAGEMENT ---
 
         function renderInventory(medicines) {
             const tableBody = document.getElementById('inventory-body');
@@ -1004,91 +1223,8 @@
                 `;
             });
         }
-
-        let isScannerRunning = false;
-
-        window.startScanner = () => {
-            if (isScannerRunning) {
-                stopScanner();
-                return;
-            }
-
-            document.getElementById('scanner-modal').classList.remove('hidden');
-            document.getElementById('scanner-modal').classList.add('flex');
-            document.getElementById('scanner-feedback').textContent = "Starting camera...";
-
-            Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: document.querySelector('#scanner-container'), 
-                    constraints: {
-                        facingMode: "environment"
-                    },
-                },
-                decoder: {
-                    readers: ["ean_reader", "code_128_reader", "upc_reader"]
-                }
-            }, function (err) {
-                if (err) {
-                    document.getElementById('scanner-feedback').textContent = `Error starting camera: ${err.message}. Check permissions.`;
-                    console.error("Quagga initialization error:", err);
-                    isScannerRunning = false;
-                    return;
-                }
-                Quagga.start();
-                isScannerRunning = true;
-                document.getElementById('scanner-feedback').textContent = "Scanning... Point camera at barcode.";
-            });
-
-            Quagga.onDetected(function (data) {
-                Quagga.stop();
-                isScannerRunning = false;
-                
-                const barcode = data.codeResult.code;
-                
-                const existingMedicine = globalMedicines.find(m => m.batch === barcode);
-                
-                if (existingMedicine) {
-                    document.getElementById('scanner-feedback').textContent = `Scanned: Existing item ${existingMedicine.name}`;
-                    
-                    document.getElementById('scanner-modal').classList.remove('flex');
-                    document.getElementById('scanner-modal').classList.add('hidden');
-
-                    editMedicine(existingMedicine.id);
-                    openModal("Existing Item Found", `Barcode **${barcode}** matched **${existingMedicine.name}**. Edit mode loaded.`, "OK", () => {}, true);
-                    return;
-
-                } else {
-                    document.getElementById('batch').value = barcode;
-                    const knownItem = knownBarcodes[barcode];
-
-                    if (knownItem) {
-                        document.getElementById('name').value = knownItem.name;
-                        document.getElementById('manufacturer').value = knownItem.manufacturer;
-                        openModal("Barcode Match!", `${knownItem.name} data loaded successfully. Fill remaining details and Add to Inventory.`, "OK", () => {}, true);
-                    } else {
-                        openModal("New Barcode", `Barcode **${barcode}** scanned. Please fill in all product details to save this new item.`, "OK", () => {}, true);
-                    }
-                }
-                
-                setTimeout(() => {
-                    document.getElementById('scanner-modal').classList.remove('flex');
-                    document.getElementById('scanner-modal').classList.add('hidden');
-                }, 500);
-            });
-        };
-
-        window.stopScanner = () => {
-            if (isScannerRunning) {
-                Quagga.stop();
-                isScannerRunning = false;
-                document.getElementById('scanner-modal').classList.remove('flex');
-                document.getElementById('scanner-modal').classList.add('hidden');
-                document.getElementById('scanner-container').innerHTML = '';
-            }
-        };
-
+        
+        // --- INVENTORY CRUD FUNCTIONS (Unchanged) ---
         function saveMedicine(e) {
             e.preventDefault();
 
@@ -1178,208 +1314,114 @@
             document.getElementById('cancel-edit-btn').classList.add('hidden');
         };
 
-        window.showNewOrderForm = (orderId = null) => {
-            const formContainer = document.getElementById('new-order-form-container');
-            const productSelect = document.getElementById('productSelect');
-            const orderIdField = document.getElementById('order-id-field');
-            const formTitle = document.getElementById('order-form-title');
-            const saveBtn = document.getElementById('save-order-btn');
+        // --- ORDER RENDERING (Updated for Multi-Item) ---
 
-            orderIdField.value = orderId;
-            document.getElementById('new-order-form').reset();
-
-            formContainer.classList.remove('hidden');
+        function renderRecentOrders(orders) {
+            const tableBody = document.getElementById('orders-body');
+            tableBody.innerHTML = '';
             
-            productSelect.innerHTML = '<option value="" disabled selected>Select Product</option>';
-            
-            let editingOrder = null;
+            const recentOrders = [...orders].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
-            if (orderId) {
-                editingOrder = globalOrders.find(o => o.id === orderId);
-                if (!editingOrder) {
-                    openModal("Error", "Order not found.", "OK", () => {}, true);
-                    hideNewOrderForm();
-                    return;
-                }
-                formTitle.textContent = `Edit Sale: ${editingOrder.orderId}`;
-                saveBtn.textContent = 'Update Sale';
-
-                document.getElementById('original-product-id-field').value = editingOrder.productId;
-                document.getElementById('original-quantity-field').value = editingOrder.quantity;
-            } else {
-                formTitle.textContent = `Capture New Sale`;
-                saveBtn.textContent = 'Complete Sale';
-                document.getElementById('original-product-id-field').value = '';
-                document.getElementById('original-quantity-field').value = 0;
-            }
-
-            
-            let selectOptions = [];
-            const isEditing = !!editingOrder;
-
-            globalMedicines.forEach(medicine => {
-                const isAvailable = medicine.quantity > 0;
-                const isCurrentProduct = isEditing && medicine.id === editingOrder.productId;
-
-                if (isAvailable || isCurrentProduct) {
-                    selectOptions.push({
-                        id: medicine.id,
-                        name: medicine.name,
-                        qty: medicine.quantity,
-                        price: medicine.price
-                    });
-                }
-            });
-
-            selectOptions.forEach(med => {
-                const option = document.createElement('option');
-                option.value = med.id;
-                option.textContent = `${med.name} (Qty: ${med.qty})`;
-                productSelect.appendChild(option);
-            });
-            
-            if (editingOrder) {
-                document.getElementById('customerName').value = editingOrder.customerName;
-                document.getElementById('customerEmail').value = editingOrder.customerEmail === 'N/A' ? '' : editingOrder.customerEmail;
-                document.getElementById('productSelect').value = editingOrder.productId;
-                document.getElementById('orderQuantity').value = editingOrder.quantity;
-                document.getElementById('paymentMethod').value = editingOrder.paymentMethod;
-                document.getElementById('orderPrice').value = editingOrder.price;
-            }
-        };
-
-        window.hideNewOrderForm = () => {
-            document.getElementById('new-order-form-container').classList.add('hidden');
-            document.getElementById('new-order-form').reset();
-        };
-        
-        function saveOrder(e) {
-            e.preventDefault();
-
-            const orderId = document.getElementById('order-id-field').value;
-            const isEditing = !!orderId;
-            
-            const customerName = document.getElementById('customerName').value.trim();
-            const customerEmail = document.getElementById('customerEmail').value.trim();
-            const selectedProductId = document.getElementById('productSelect').value;
-            const orderQuantity = parseInt(document.getElementById('orderQuantity').value, 10);
-            const paymentMethod = document.getElementById('paymentMethod').value;
-            const orderPrice = parseFloat(document.getElementById('orderPrice').value);
-            
-            const originalProductId = document.getElementById('original-product-id-field').value;
-            const originalQuantity = parseInt(document.getElementById('original-quantity-field').value, 10);
-
-
-            if (!customerName || !selectedProductId || isNaN(orderQuantity) || !paymentMethod || isNaN(orderPrice)) {
-                openModal("Validation Error", "Please fill in all required order fields.", "OK", () => {}, true);
-                return;
-            }
-            
-            const medicine = globalMedicines.find(m => m.id === selectedProductId);
-            
-            if (!medicine) {
-                openModal("Stock Error", "Selected product not found in inventory.", "OK", () => {}, true);
+            if (recentOrders.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No recent orders found.</td></tr>';
                 return;
             }
 
-            let inventoryChange = orderQuantity;
-            
-            if (isEditing) {
-                if (originalProductId === selectedProductId) {
-                    inventoryChange = orderQuantity - originalQuantity;
-                } else {
-                    const oldMedicine = globalMedicines.find(m => m.id === originalProductId);
-                    if (oldMedicine) {
-                        oldMedicine.quantity += originalQuantity;
-                    }
-                    inventoryChange = orderQuantity;
-                }
-            }
-            
-            if (isEditing) {
-                 if (originalProductId === selectedProductId) {
-                    const netRequired = orderQuantity - originalQuantity;
-                    if (netRequired > medicine.quantity) {
-                        openModal("Stock Error", `Cannot take ${orderQuantity} units. Only ${medicine.quantity + originalQuantity} available (incl. original order quantity).`, "OK", () => {}, true);
-                        return;
-                    }
-                 } else {
-                    if (orderQuantity > medicine.quantity) {
-                        openModal("Stock Error", `Insufficient stock for ${medicine.name}. Only ${medicine.quantity} units are available.`, "OK", () => {}, true);
-                        return;
-                    }
-                 }
-            } else {
-                if (orderQuantity > medicine.quantity) {
-                    openModal("Stock Error", `Insufficient stock for ${medicine.name}. Only ${medicine.quantity} units are available.`, "OK", () => {}, true);
-                    return;
-                }
-            }
+            recentOrders.forEach(order => {
+                const row = tableBody.insertRow();
+                row.className = `transition duration-150 hover:bg-gray-800 text-gray-200`;
+                
+                // Show product summary string (or old single product name)
+                const productSummary = order.items ? `${order.items.length} items (${order.product})` : order.product;
 
-            if (isEditing) {
-                if (originalProductId === selectedProductId) {
-                    medicine.quantity -= inventoryChange;
-                } else {
-                    medicine.quantity -= orderQuantity;
-                }
-            } else {
-                medicine.quantity -= orderQuantity;
-            }
-            
-            if (medicine.quantity < 0) medicine.quantity = 0;
-
-            const orderRecord = {
-                id: orderId || generateUUID(),
-                orderId: isEditing ? globalOrders.find(o => o.id === orderId).orderId : `#${(globalOrders.length + 1).toString().padStart(3, '0')}`,
-                customerName,
-                customerEmail: customerEmail || 'N/A',
-                productId: selectedProductId,
-                product: medicine.name,
-                quantity: orderQuantity,
-                date: new Date().toISOString().split('T')[0],
-                status: 'Sold',
-                paymentMethod,
-                price: orderPrice
-            };
-
-            if (isEditing) {
-                const index = globalOrders.findIndex(o => o.id === orderId);
-                if (index !== -1) {
-                    globalOrders[index] = orderRecord;
-                }
-                openModal("Update Complete", `Order ${orderRecord.orderId} successfully updated.`, "OK", () => {}, true);
-            } else {
-                globalOrders.push(orderRecord);
-                openModal("Sale Complete", `Order ${orderRecord.orderId} for ${medicine.name} has been processed and saved.`, "OK", () => {}, true);
-            }
-
-            saveData(ORDER_STORAGE_KEY, globalOrders);
-            saveData(MEDICINE_STORAGE_KEY, globalMedicines);
-
-            renderAllViews();
-            hideNewOrderForm();
+                row.innerHTML = `
+                    <td class="p-3 font-mono text-cyan-300">${order.orderId}</td>
+                    <td class="p-3">
+                        <p class="font-semibold">${order.customerName}</p>
+                        <p class="text-xs text-gray-500 hidden md:block">${order.customerEmail}</p>
+                    </td>
+                    <td class="p-3 hidden sm:table-cell text-gray-400">${productSummary}</td>
+                    <td class="p-3">${order.quantity}</td>
+                    <td class="p-3">${getStatusBadge(order.status)}</td>
+                    <td class="p-3">
+                        <button onclick="viewOrderDetails('${order.id}')" class="text-indigo-400 hover:text-indigo-200 text-sm font-semibold rounded-md bg-indigo-900/30 p-1">View</button>
+                    </td>
+                `;
+            });
         }
         
-        window.editOrder = (id) => {
-            window.changeView('orders-view');
-            window.showNewOrderForm(id);
-        };
+        function renderAllOrders(orders) {
+             const tableBody = document.getElementById('all-orders-body');
+             tableBody.innerHTML = '';
+             const loadingRow = document.getElementById('all-orders-loading');
+             if (loadingRow) loadingRow.remove();
+
+             if (orders.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="9" class="p-4 text-center text-gray-500">No orders found.</td></tr>';
+                return;
+             }
+
+             [...orders].sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(order => {
+                 const row = tableBody.insertRow();
+                 row.className = `transition duration-150 hover:bg-gray-800 text-gray-200`;
+                 
+                 const orderDate = order.date;
+                 const productSummary = order.items ? `${order.items.length} items` : (order.product || 'N/A');
+
+                 row.innerHTML = `
+                    <td class="p-3 font-mono text-cyan-300">${order.orderId}</td>
+                    <td class="p-3">
+                        <p class="font-semibold">${order.customerName}</p>
+                        <p class="text-xs text-gray-500">${order.customerEmail}</p>
+                    </td>
+                    <td class="p-3 hidden sm:table-cell text-gray-400">${productSummary}</td>
+                    <td class="p-3">${order.quantity}</td>
+                    <td class="p-3 hidden md:table-cell text-gray-400">${orderDate}</td>
+                    <td class="p-3">${getStatusBadge(order.status)}</td>
+                    <td class="p-3 hidden sm:table-cell text-gray-400">${order.paymentMethod}</td>
+                    <td class="p-3 hidden sm:table-cell text-green-400">₹${order.price.toFixed(2)}</td>
+                    <td class="p-3 flex space-x-1">
+                        <button onclick="viewOrderDetails('${order.id}')" class="text-cyan-400 hover:text-cyan-200 p-1 rounded-full hover:bg-cyan-900/30 transition duration-150" title="View Details">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </button>
+                        <button onclick="editOrder('${order.id}')" class="text-yellow-400 hover:text-yellow-200 p-1 rounded-full hover:bg-yellow-900/30 transition duration-150" title="Edit Order">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-9-4l9-9m-7 11l-3 3"></path></svg>
+                        </button>
+                        <button onclick="deleteOrderPrompt('${order.id}', '${order.orderId}')" class="text-red-400 hover:text-red-200 p-1 rounded-full hover:bg-red-900/30 transition duration-150" title="Delete Order">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </td>
+                `;
+             });
+        }
 
 
         window.viewOrderDetails = (id) => {
             const order = globalOrders.find(o => o.id === id);
             if (!order) return;
+            
+            let itemsDetails = '';
+            if (order.items && Array.isArray(order.items)) {
+                itemsDetails = '<p class="font-bold mt-3 text-cyan-300 border-t border-gray-700/50 pt-2">Items Purchased:</p><ul class="list-disc pl-5 text-sm">';
+                order.items.forEach(item => {
+                    itemsDetails += `<li>${item.name} (${item.quantity} units) @ ₹${item.pricePerUnit.toFixed(2)} each</li>`;
+                });
+                itemsDetails += '</ul>';
+            } else {
+                 itemsDetails = `<p class="font-bold mt-3 text-red-400">Old Order Format: ${order.product} (${order.quantity} units)</p>`;
+            }
+
 
             const details = `
                 <div class="space-y-2 text-sm text-gray-300">
                     <p><strong>Order ID:</strong> <span class="text-cyan-300">${order.orderId}</span></p>
                     <p><strong>Customer:</strong> ${order.customerName} (${order.customerEmail})</p>
-                    <p><strong>Product:</strong> ${order.product}</p>
-                    <p><strong>Quantity:</strong> ${order.quantity}</p>
+                    ${itemsDetails}
+                    <p><strong>Total Units:</strong> ${order.quantity}</p>
                     <p><strong>Date:</strong> ${order.date}</p>
                     <p><strong>Status:</strong> ${getStatusBadge(order.status)}</p>
                     <p><strong>Payment:</strong> ${order.paymentMethod}</p>
-                    <p><strong>Price:</strong> <span class="text-green-400 font-bold">₹${order.price.toFixed(2)}</span></p>
+                    <p><strong>Total Price:</strong> <span class="text-green-400 font-bold">₹${order.price.toFixed(2)}</span></p>
                 </div>
             `;
 
@@ -1399,9 +1441,20 @@
             const orderToDelete = globalOrders.find(o => o.id === id);
             
             if (orderToDelete) {
-                const medicine = globalMedicines.find(m => m.id === orderToDelete.productId);
-                if (medicine) {
-                    medicine.quantity += orderToDelete.quantity;
+                // If it's a multi-item order, iterate over all items to return stock
+                if (orderToDelete.items && Array.isArray(orderToDelete.items)) {
+                    orderToDelete.items.forEach(item => {
+                        const medicine = globalMedicines.find(m => m.id === item.productId);
+                        if (medicine) {
+                            medicine.quantity += item.quantity;
+                        }
+                    });
+                } else {
+                    // Fallback for old single-item orders
+                    const medicine = globalMedicines.find(m => m.id === orderToDelete.productId);
+                    if (medicine) {
+                        medicine.quantity += orderToDelete.quantity;
+                    }
                 }
             }
 
@@ -1411,6 +1464,92 @@
             openModal("Deleted", `Order deleted successfully and stock returned.`, "OK", () => {}, true);
             renderAllViews();
         }
+
+
+        // --- SCANNER & SEARCH (Unchanged) ---
+        let isScannerRunning = false;
+
+        window.startScanner = () => {
+            if (isScannerRunning) {
+                stopScanner();
+                return;
+            }
+
+            document.getElementById('scanner-modal').classList.remove('hidden');
+            document.getElementById('scanner-modal').classList.add('flex');
+            document.getElementById('scanner-feedback').textContent = "Starting camera...";
+
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#scanner-container'), 
+                    constraints: {
+                        facingMode: "environment"
+                    },
+                },
+                decoder: {
+                    readers: ["ean_reader", "code_128_reader", "upc_reader"]
+                }
+            }, function (err) {
+                if (err) {
+                    document.getElementById('scanner-feedback').textContent = `Error starting camera: ${err.message}. Check permissions.`;
+                    console.error("Quagga initialization error:", err);
+                    isScannerRunning = false;
+                    return;
+                }
+                Quagga.start();
+                isScannerRunning = true;
+                document.getElementById('scanner-feedback').textContent = "Scanning... Point camera at barcode.";
+            });
+
+            Quagga.onDetected(function (data) {
+                Quagga.stop();
+                isScannerRunning = false;
+                
+                const barcode = data.codeResult.code;
+                
+                const existingMedicine = globalMedicines.find(m => m.batch === barcode);
+                
+                if (existingMedicine) {
+                    document.getElementById('scanner-feedback').textContent = `Scanned: Existing item ${existingMedicine.name}`;
+                    
+                    document.getElementById('scanner-modal').classList.remove('flex');
+                    document.getElementById('scanner-modal').classList.add('hidden');
+
+                    editMedicine(existingMedicine.id);
+                    openModal("Existing Item Found", `Barcode **${barcode}** matched **${existingMedicine.name}**. Edit mode loaded.`, "OK", () => {}, true);
+                    return;
+
+                } else {
+                    document.getElementById('batch').value = barcode;
+                    const knownItem = knownBarcodes[barcode];
+
+                    if (knownItem) {
+                        document.getElementById('name').value = knownItem.name;
+                        document.getElementById('manufacturer').value = knownItem.manufacturer;
+                        openModal("Barcode Match!", `${knownItem.name} data loaded successfully. Fill remaining details and Add to Inventory.`, "OK", () => {}, true);
+                    } else {
+                        openModal("New Barcode", `Barcode **${barcode}** scanned. Please fill in all product details to save this new item.`, "OK", () => {}, true);
+                    }
+                }
+                
+                setTimeout(() => {
+                    document.getElementById('scanner-modal').classList.remove('flex');
+                    document.getElementById('scanner-modal').classList.add('hidden');
+                }, 500);
+            });
+        };
+
+        window.stopScanner = () => {
+            if (isScannerRunning) {
+                Quagga.stop();
+                isScannerRunning = false;
+                document.getElementById('scanner-modal').classList.remove('flex');
+                document.getElementById('scanner-modal').classList.add('hidden');
+                document.getElementById('scanner-container').innerHTML = '';
+            }
+        };
 
         window.handleGlobalSearch = () => {
             const filter = document.getElementById('global-search-input').value.toUpperCase();
@@ -1448,50 +1587,7 @@
             }
         };
 
-        window.changeView = (viewId, element) => {
-            document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'));
-            document.getElementById(viewId).classList.remove('hidden');
-
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            if (element) {
-                element.classList.add('active');
-            } else {
-                document.getElementById(`nav-${viewId.split('-')[0]}`).classList.add('active');
-            }
-            window.currentView = viewId;
-            if (viewId !== 'orders-view') {
-                hideNewOrderForm();
-            }
-            document.getElementById('global-search-input').value = '';
-            window.handleGlobalSearch();
-            
-            if (window.innerWidth < 1024) {
-                toggleSidebar(false);
-            }
-        };
-        window.currentView = 'dashboard-view';
-
-
-        window.toggleSidebar = (forceOpen = null) => {
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('backdrop');
-            const isMenuOpen = sidebar.classList.contains('open');
-
-            if (forceOpen === true || (forceOpen === null && !isMenuOpen)) {
-                sidebar.classList.add('open');
-                backdrop.classList.add('show');
-            } else if (forceOpen === false || (forceOpen === null && isMenuOpen)) {
-                sidebar.classList.remove('open');
-                backdrop.classList.remove('show');
-            }
-        };
-
-        function setDateDisplay() {
-            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = new Date().toLocaleDateString('en-US', dateOptions);
-            document.getElementById('current-date-display').textContent = dateString;
-            document.getElementById('date-text').textContent = dateString;
-        }
+        // --- MODAL & EVENT LISTENERS (Unchanged) ---
 
         let modalAction = null;
         window.openModal = (title, message, confirmText, callback, isInfo = false) => {
