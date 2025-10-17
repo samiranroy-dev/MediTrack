@@ -718,11 +718,7 @@
         let globalMedicines = [];
         let globalOrders = [];
         
-        const knownBarcodes = {
-            "789012345678": { name: "Calpol 500mg (Auto-filled)", manufacturer: "GSK Health" },
-            "998877665544": { name: "Ibuprofen 200mg", manufacturer: "Pfizer" },
-            "123456789012": { name: "Vitamin C Chewable", manufacturer: "VitaCorp" }
-        };
+        const knownBarcodes = {}; // Mock data for barcodes removed
 
         function loadData(key, mockData = []) {
             const data = localStorage.getItem(key);
@@ -742,20 +738,18 @@
             localStorage.setItem(key, JSON.stringify(data));
         }
 
-        
-
-
         function initializeData() {
-            // Check if data exists in localStorage. If not, load mock data once.
-            const initialLoadMedicines = localStorage.getItem(MEDICINE_STORAGE_KEY) === null ? mockMedicines : [];
-            const initialLoadOrders = localStorage.getItem(ORDER_STORAGE_KEY) === null ? mockOrders : [];
+            // Check if data exists in localStorage. If not, default to an empty array.
+            const initialLoadMedicines = localStorage.getItem(MEDICINE_STORAGE_KEY) === null ? [] : [];
+            const initialLoadOrders = localStorage.getItem(ORDER_STORAGE_KEY) === null ? [] : [];
             
             globalMedicines = loadData(MEDICINE_STORAGE_KEY, initialLoadMedicines);
             globalOrders = loadData(ORDER_STORAGE_KEY, initialLoadOrders);
 
-            // If we just loaded mock data, save it immediately so it doesn't reload next time.
-            if (initialLoadMedicines.length > 0) saveData(MEDICINE_STORAGE_KEY, globalMedicines);
-            if (initialLoadOrders.length > 0) saveData(ORDER_STORAGE_KEY, globalOrders);
+            // If we just loaded mock data (which is now []), this will save the empty array
+            // only if the key was null, effectively initializing it to empty.
+            if (localStorage.getItem(MEDICINE_STORAGE_KEY) === null) saveData(MEDICINE_STORAGE_KEY, []);
+            if (localStorage.getItem(ORDER_STORAGE_KEY) === null) saveData(ORDER_STORAGE_KEY, []);
 
             renderAllViews();
         }
@@ -1072,10 +1066,8 @@
                     if (knownItem) {
                         document.getElementById('name').value = knownItem.name;
                         document.getElementById('manufacturer').value = knownItem.manufacturer;
-                        document.getElementById('scanner-feedback').textContent = `Scanned & Autofilled: ${knownItem.name}`;
                         openModal("Barcode Match!", `${knownItem.name} data loaded successfully. Fill remaining details and Add to Inventory.`, "OK", () => {}, true);
                     } else {
-                        document.getElementById('scanner-feedback').textContent = `Scanned: ${barcode}. Enter remaining details.`;
                         openModal("New Barcode", `Barcode **${barcode}** scanned. Please fill in all product details to save this new item.`, "OK", () => {}, true);
                     }
                 }
@@ -1551,4 +1543,3 @@
     </script>
 </body>
 </html>
-
