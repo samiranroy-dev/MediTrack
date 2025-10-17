@@ -742,22 +742,7 @@
             localStorage.setItem(key, JSON.stringify(data));
         }
 
-        const mockOrders = [
-            { id: generateUUID(), orderId: '#001', customerName: 'Bibek Das', customerEmail: 'bibekdas@example.com', product: 'Paracetamol', quantity: 5, date: '2023-06-15', status: 'Sold', paymentMethod: 'Cash', price: 25.00, productId: 'prod-001' },
-            { id: generateUUID(), orderId: '#002', customerName: 'Samiran Roy', customerEmail: 'samiran@example.com', product: 'Rablet-20', quantity: 2, date: '2023-06-16', status: 'Order on Hold', paymentMethod: 'Card', price: 15.50, productId: 'prod-002' },
-            { id: generateUUID(), orderId: '#003', customerName: 'Rakesh Verma', customerEmail: 'rakesh@example.com', product: 'Aspirin', quantity: 3, date: '2023-06-17', status: 'Delivered', paymentMethod: 'UPI', price: 12.00, productId: 'prod-004' },
-            { id: generateUUID(), orderId: '#004', customerName: 'Priya Sharma', customerEmail: 'priya@example.com', product: 'Amoxicillin', quantity: 1, date: '2023-06-18', status: 'Processing', paymentMethod: 'Cash', price: 40.00, productId: 'prod-003' },
-            { id: generateUUID(), orderId: '#005', customerName: 'Rajesh', customerEmail: 'raj@example.com', product: 'Paracetamol', quantity: 10, date: '2023-05-10', status: 'Sold', paymentMethod: 'Cash', price: 50.00, productId: 'prod-001' },
-            { id: generateUUID(), orderId: '#006', customerName: 'Anjali', customerEmail: 'anjali@example.com', product: 'Rablet-20', quantity: 5, date: '2023-05-15', status: 'Delivered', paymentMethod: 'Card', price: 75.00, productId: 'prod-002' },
-            { id: generateUUID(), orderId: '#007', customerName: 'Vikram', customerEmail: 'vik@example.com', product: 'Paracetamol', quantity: 8, date: '2023-07-01', status: 'Sold', paymentMethod: 'UPI', price: 40.00, productId: 'prod-001' },
-        ];
-
-        const mockMedicines = [
-            { id: 'prod-001', name: 'Paracetamol', batch: 'PC500A', expiryDate: '2026-10-30', quantity: 120, price: 5.50, manufacturer: 'HealthCorp', minStock: 50 },
-            { id: 'prod-002', name: 'Rablet-20', batch: 'RA20B', expiryDate: '2024-03-01', quantity: 15, price: 15.00, manufacturer: 'PharmaGen', minStock: 20 },
-            { id: 'prod-003', name: 'Amoxicillin', batch: 'AXC100', expiryDate: '2025-12-31', quantity: 45, price: 8.90, manufacturer: 'GlobalDrugs', minStock: 60 },
-            { id: 'prod-004', name: 'Aspirin', batch: 'ASP001', expiryDate: '2026-05-20', quantity: 0, price: 3.20, manufacturer: 'MediCo', minStock: 10 }
-        ];
+        
 
 
         function initializeData() {
@@ -1566,3 +1551,4 @@
     </script>
 </body>
 </html>
+
