@@ -60,7 +60,43 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            /* Mobile Hide */
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            z-index: 50; /* Above backdrop */
+            height: 100%;
+            width: 256px;
         }
+        #sidebar.open {
+            transform: translateX(0);
+        }
+
+        #backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 40;
+            display: none;
+        }
+        #backdrop.show {
+            display: block;
+        }
+
+        @media (min-width: 1024px) { /* lg breakpoint */
+            #sidebar {
+                transform: translateX(0);
+                position: static;
+                width: 256px;
+            }
+            #backdrop {
+                display: none !important;
+            }
+        }
+        
         .nav-item {
             display: flex;
             align-items: center;
@@ -139,6 +175,12 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* Ensure tables are horizontally scrollable on small screens */
+        .responsive-table-wrapper {
+            overflow-x: auto;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -188,7 +230,11 @@
 
 
     <div id="app-container" class="flex h-screen overflow-hidden hidden">
-        <nav id="sidebar" class="w-64 flex-shrink-0 z-10 hidden lg:flex">
+        <!-- Backdrop for mobile menu -->
+        <div id="backdrop" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar Navigation -->
+        <nav id="sidebar">
             <div class="flex flex-col w-full">
                 <div class="p-6 border-b border-gray-700/50">
                     <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-green-500">
@@ -303,7 +349,7 @@
 
                     <div class="neon-card p-6">
                         <h2 class="text-xl font-semibold mb-4 border-b pb-2 border-gray-700 text-cyan-400">Recent Orders</h2>
-                        <div class="overflow-x-auto">
+                        <div class="responsive-table-wrapper">
                             <table class="min-w-full text-left text-sm neon-table">
                                 <thead>
                                     <tr>
@@ -343,7 +389,7 @@
                                     </div>
                                     
                                     <input type="date" id="expiryDate" placeholder="Expiry Date" required
-                                        class="col-span-1 w-full p-3 rounded-lg bg-gray-700/50 border border-cyan-500/50 focus:ring-2 focus:ring-cyan-500 placeholder-gray-400 text-white outline-none">
+                                        class="col-span-2 sm:col-span-1 w-full p-3 rounded-lg bg-gray-700/50 border border-cyan-500/50 focus:ring-2 focus:ring-cyan-500 placeholder-gray-400 text-white outline-none">
                                 </div>
 
                                 <div class="grid grid-cols-3 gap-4">
@@ -373,7 +419,7 @@
                     <div class="lg:col-span-2 p-6 rounded-lg neon-card flex flex-col h-full">
                         <h2 class="text-xl font-semibold mb-4 border-b pb-2 border-gray-700 text-cyan-400">Product List</h2>
                         
-                        <div class="flex-grow overflow-y-auto custom-scrollbar">
+                        <div class="flex-grow overflow-y-auto custom-scrollbar responsive-table-wrapper">
                             <table class="min-w-full text-left text-sm neon-table" id="inventory-table">
                                 <thead>
                                     <tr>
@@ -457,7 +503,7 @@
                     </div>
 
                     <div class="neon-card p-6">
-                        <div class="overflow-x-auto">
+                        <div class="responsive-table-wrapper">
                             <table class="min-w-full text-left text-sm neon-table">
                                 <thead>
                                     <tr class="text-indigo-400">
@@ -487,7 +533,7 @@
                         
                         <div class="neon-card p-6 lg:col-span-2">
                             <h3 class="text-xl font-semibold mb-4 border-b pb-2 border-gray-700 text-cyan-400">Monthly Sales Summary (Last 6 Months)</h3>
-                            <div class="overflow-x-auto">
+                            <div class="responsive-table-wrapper">
                                 <table class="min-w-full text-left text-sm">
                                     <thead class="bg-gray-700/50">
                                         <tr>
@@ -1432,18 +1478,26 @@
             }
             document.getElementById('global-search-input').value = '';
             window.handleGlobalSearch();
+            
+            // Close sidebar automatically on mobile after view switch
+            if (window.innerWidth < 1024) {
+                toggleSidebar(false);
+            }
         };
         window.currentView = 'dashboard-view';
 
 
-        window.toggleSidebar = () => {
+        window.toggleSidebar = (forceOpen = null) => {
             const sidebar = document.getElementById('sidebar');
-            if (sidebar.classList.contains('hidden')) {
-                sidebar.classList.remove('hidden');
-                sidebar.classList.add('fixed', 'top-0', 'left-0', 'h-full', 'w-64', 'lg:static');
-            } else {
-                sidebar.classList.add('hidden');
-                sidebar.classList.remove('fixed', 'top-0', 'left-0', 'h-full');
+            const backdrop = document.getElementById('backdrop');
+            const isMenuOpen = sidebar.classList.contains('open');
+
+            if (forceOpen === true || (forceOpen === null && !isMenuOpen)) {
+                sidebar.classList.add('open');
+                backdrop.classList.add('show');
+            } else if (forceOpen === false || (forceOpen === null && isMenuOpen)) {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('show');
             }
         };
 
